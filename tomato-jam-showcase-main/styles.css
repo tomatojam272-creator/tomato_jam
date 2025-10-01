@@ -1,0 +1,733 @@
+/* CSS Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Design System Variables */
+:root {
+    /* Warm tomato jam color palette */
+    --background: hsl(31, 23%, 97%); /* warm cream background */
+    --foreground: hsl(25, 20%, 15%); /* dark brown text */
+
+    --card: hsl(31, 23%, 97%);
+    --card-foreground: hsl(25, 20%, 15%);
+
+    --primary: hsl(12, 76%, 47%); /* rich tomato red */
+    --primary-foreground: hsl(31, 23%, 97%);
+
+    --secondary: hsl(31, 12%, 87%); /* soft beige */
+    --secondary-foreground: hsl(25, 20%, 15%);
+
+    --muted: hsl(31, 8%, 92%); /* light cream */
+    --muted-foreground: hsl(25, 15%, 45%);
+
+    --accent: hsl(25, 35%, 25%); /* warm brown */
+    --accent-foreground: hsl(31, 23%, 97%);
+
+    --border: hsl(31, 15%, 85%);
+    --input: hsl(31, 15%, 85%);
+
+    /* Custom design tokens */
+    --tomato-light: hsl(12, 65%, 65%);
+    --tomato-glow: hsl(12, 85%, 55%);
+    --cream-soft: hsl(31, 35%, 95%);
+    --brown-warm: hsl(25, 25%, 35%);
+    
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, var(--primary), var(--tomato-glow));
+    --gradient-soft: linear-gradient(180deg, var(--cream-soft), var(--background));
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(12 76% 47% / 0.1);
+    --shadow-product: 0 8px 32px -8px hsl(12 76% 47% / 0.15);
+    --shadow-button: 0 4px 16px -4px hsl(12 76% 47% / 0.3);
+    
+    /* Animation */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    background-color: var(--background);
+    color: var(--foreground);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Text Colors */
+.text-primary { color: var(--primary); }
+.text-accent { color: var(--accent); }
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    font-size: 0.875rem;
+}
+
+.btn-lg {
+    padding: 1.5rem 2rem;
+    font-size: 1.125rem;
+    border-radius: 1rem;
+}
+
+.btn-primary {
+    background: var(--gradient-hero);
+    color: var(--primary-foreground);
+    box-shadow: var(--shadow-button);
+}
+
+.btn-primary:hover {
+    box-shadow: var(--shadow-product);
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--foreground);
+    border: 1px solid hsl(12 76% 47% / 0.2);
+}
+
+.btn-outline:hover {
+    background: hsl(12 76% 47% / 0.05);
+    border-color: hsl(12 76% 47% / 0.4);
+}
+
+.btn-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* Icons */
+.icon {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* Sticky Order Button */
+.sticky-order-btn {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 50;
+    display: none;
+}
+
+.sticky-btn {
+    background: var(--gradient-hero);
+    color: var(--primary-foreground);
+    border: none;
+    border-radius: 50%;
+    padding: 1rem;
+    box-shadow: var(--shadow-button);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.sticky-btn:hover {
+    box-shadow: var(--shadow-product);
+    transform: scale(1.1);
+}
+
+/* Hero Section */
+.hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 5rem 1rem;
+}
+
+.hero-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.badge {
+    background: var(--secondary);
+    color: var(--accent-foreground);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    width: fit-content;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: bold;
+    line-height: 1.1;
+}
+
+.hero-description {
+    font-size: 1.25rem;
+    color: var(--muted-foreground);
+    line-height: 1.6;
+}
+
+.hero-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.hero-image {
+    position: relative;
+}
+
+.hero-image-glow {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, hsl(12 76% 47% / 0.1), hsl(12 65% 65% / 0.2));
+    border-radius: 1.5rem;
+    filter: blur(3rem);
+}
+
+.hero-img {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-product);
+}
+
+/* About Section */
+.about-section {
+    padding: 5rem 1rem;
+    background: var(--gradient-soft);
+}
+
+.about-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.about-image {
+    position: relative;
+}
+
+.about-img {
+    width: 100%;
+    height: auto;
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-soft);
+}
+
+.love-card {
+    position: absolute;
+    bottom: -1rem;
+    right: -1rem;
+    background: var(--card);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid hsl(31 15% 85% / 0.5);
+}
+
+.love-card-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.love-icon {
+    width: 2rem;
+    height: 2rem;
+    color: var(--primary);
+    fill: currentColor;
+}
+
+.love-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+}
+
+.love-title {
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.about-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.about-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--foreground);
+    line-height: 1.2;
+}
+
+.about-description {
+    font-size: 1.125rem;
+    color: var(--muted-foreground);
+    line-height: 1.6;
+}
+
+/* Benefits Section */
+.benefits-section {
+    padding: 5rem 1rem;
+}
+
+.benefits-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.benefits-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--foreground);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.benefits-description {
+    font-size: 1.25rem;
+    color: var(--muted-foreground);
+    max-width: 32rem;
+    margin: 0 auto;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.benefit-card {
+    background: hsl(31 23% 97% / 0.5);
+    backdrop-filter: blur(12px);
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition-smooth);
+}
+
+.benefit-card:hover {
+    box-shadow: var(--shadow-product);
+    transform: translateY(-4px);
+}
+
+.benefit-icon {
+    width: 4rem;
+    height: 4rem;
+    background: hsl(12 76% 47% / 0.1);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.benefit-icon svg {
+    width: 2rem;
+    height: 2rem;
+    color: var(--primary);
+}
+
+.benefit-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--foreground);
+    margin-bottom: 1rem;
+}
+
+.benefit-description {
+    color: var(--muted-foreground);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.benefit-check {
+    padding-top: 0.5rem;
+}
+
+.check-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--primary);
+}
+
+/* Order Section */
+.order-section {
+    padding: 5rem 1rem;
+    background: var(--gradient-soft);
+}
+
+.order-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.order-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--foreground);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.order-description {
+    font-size: 1.25rem;
+    color: var(--muted-foreground);
+}
+
+.order-card {
+    max-width: 64rem;
+    margin: 0 auto;
+    background: hsl(31 23% 97% / 0.8);
+    backdrop-filter: blur(12px);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-product);
+}
+
+.order-content {
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.product-image {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.product-image-bg {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, hsl(12 76% 47% / 0.05), hsl(12 65% 65% / 0.1));
+    border-radius: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-img {
+    width: 75%;
+    height: 75%;
+    object-fit: cover;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-soft);
+}
+
+.product-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.product-name {
+    font-size: 1.875rem;
+    font-weight: bold;
+    color: var(--foreground);
+}
+
+.product-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.product-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.option-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--foreground);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.size-buttons {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.size-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    background: transparent;
+    color: var(--foreground);
+    border: 1px solid hsl(12 76% 47% / 0.2);
+}
+
+.size-btn.active {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
+}
+
+.size-btn:hover {
+    background: hsl(12 76% 47% / 0.1);
+}
+
+.size-btn.active:hover {
+    background: hsl(12 76% 47% / 0.9);
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.quantity-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 1px solid hsl(12 76% 47% / 0.2);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.quantity-btn:hover {
+    background: hsl(12 76% 47% / 0.1);
+    border-color: hsl(12 76% 47% / 0.4);
+}
+
+.quantity-btn svg {
+    width: 1rem;
+    height: 1rem;
+    color: var(--foreground);
+}
+
+.quantity-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--foreground);
+    width: 3rem;
+    text-align: center;
+}
+
+.order-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.125rem;
+}
+
+.total-label {
+    color: var(--muted-foreground);
+}
+
+.total-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.order-btn {
+    width: 100%;
+    padding: 1.5rem;
+    font-size: 1.125rem;
+    border-radius: 1rem;
+}
+
+.order-note {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    text-align: center;
+}
+
+/* Contact Section */
+.contact-section {
+    padding: 5rem 1rem;
+}
+
+.contact-content {
+    max-width: 32rem;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.contact-header {
+    margin-bottom: 2rem;
+}
+
+.contact-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--foreground);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.contact-description {
+    font-size: 1.25rem;
+    color: var(--muted-foreground);
+}
+
+.contact-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.contact-btn {
+    border-radius: 1rem;
+    border: 1px solid hsl(12 76% 47% / 0.2);
+    transition: var(--transition-smooth);
+}
+
+.contact-btn:hover {
+    background: hsl(12 76% 47% / 0.05);
+    border-color: hsl(12 76% 47% / 0.4);
+}
+
+.contact-footer {
+    padding-top: 2rem;
+    border-top: 1px solid hsl(31 15% 85% / 0.5);
+}
+
+.footer-text {
+    color: var(--muted-foreground);
+}
+
+/* Responsive Design */
+@media (min-width: 640px) {
+    .hero-buttons {
+        flex-direction: row;
+    }
+    
+    .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .sticky-order-btn {
+        display: block;
+    }
+    
+    .hero-title {
+        font-size: 4rem;
+    }
+    
+    .about-title {
+        font-size: 3rem;
+    }
+    
+    .benefits-title {
+        font-size: 3rem;
+    }
+    
+    .order-title {
+        font-size: 3rem;
+    }
+    
+    .contact-title {
+        font-size: 3rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-content {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .hero-title {
+        font-size: 4.5rem;
+    }
+    
+    .about-content {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .about-title {
+        font-size: 3rem;
+    }
+    
+    .benefits-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .order-content {
+        grid-template-columns: 1fr 1fr;
+        padding: 3rem;
+    }
+    
+    .benefits-title {
+        font-size: 3rem;
+    }
+    
+    .order-title {
+        font-size: 3rem;
+    }
+    
+    .contact-title {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .sticky-order-btn {
+        display: block;
+    }
+}
+
+#thank-you-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh; /* centers vertically */
+}
+#order-summary {
+  max-width: 450px;
+  width: 100%;
+}
