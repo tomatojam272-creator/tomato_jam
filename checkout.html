@@ -257,7 +257,7 @@
   orderInfo.paymentMethod = method;
 
   // --- send to Google Sheets Web App ---
-  fetch("https://script.google.com/macros/s/AKfycbyfMjLpPHGZTWsX-mpChD4jSMRzW0r2p42a0jNARursfdoEOmc6rGT8eYKON3frCwfh/exec", {   // <-- replace with deployed script URL
+  fetch("https://script.google.com/macros/s/AKfycbzedXZ9tuTm8UhDtoq1o2AvZuGLxaPiomOW4XT-ljAx1XUSQ6GljgRnrL1NGUo65RzL/exec", {   // <-- replace with deployed script URL
     method: "POST",
     body: JSON.stringify(orderInfo)
   })
