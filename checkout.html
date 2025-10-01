@@ -244,41 +244,43 @@
     finalizeOrder(`Bank (${selectedBank})`,proof);
   });
 
-  async function finalizeOrder(method,proof){
-    orderInfo.paymentMethod=method; orderInfo.paymentProof=proof;
+  async function showThankYou(method, paymentProof = null) {
+  orderInfo.paymentMethod = method;
+  orderInfo.paymentProof = paymentProof; // base64 string
+
+  try {
+    const url = "https://script.google.com/macros/s/AKfycbw3CurIeuf0cGzRaC9dBNYEJH-vhEEM04xz1uSUTPPS7oRIWScUK9WjE_0KDbBc53OD/exec";
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify(orderInfo), // ✅ send as plain text
+      headers: { "Content-Type": "text/plain" }
+    });
+
+    console.log("Sheet response:", await response.text());
+
+    // Success UI
     paymentStep.classList.add("hidden");
     thankStep.classList.remove("hidden");
-    document.getElementById("checkout-header").textContent="⏳ Processing Order...";
-    orderDetails.innerHTML=`<div class="loading-box"><div class="spinner"></div><p>Please wait...</p></div>`;
+    document.getElementById("checkout-header").textContent = "✅ Checkout Successfully";
 
-    try {
-    const url = "https://script.google.com/macros/s/AKfycbzMP68lpMf4vZcZi_GVj5VJ9ug4OT3174HoXvOQ3ntyAOBfPpnGtRH94XSggWlsFSSG/exec";
-
-    const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(orderInfo)
-  });
-
-    await res.text(); // still consume response
-
-    document.getElementById("checkout-header").textContent = "✅ Checkout Success";
     orderDetails.innerHTML = `
       <h3>Order Summary</h3>
       <p><strong>Product:</strong> ${orderInfo.product}</p>
       <p><strong>Total:</strong> ₱${orderInfo.total.toFixed(2)}</p>
       <h3>Customer</h3>
       <p>${orderInfo.name} - ${orderInfo.contact}</p>
-      <p><strong>Payment:</strong> ${method}</p>
+      <p><strong>Payment Method:</strong> ${method}</p>
     `;
 
-    document.getElementById("home-btn").onclick = () => location.href = "index.html";
-
+    document.getElementById("home-btn").onclick = () => {
+      window.location.href = "index.html";
+    };
   } catch (err) {
     console.error("Error sending order:", err);
-    alert("Error placing order. Try again.");
-    thankStep.classList.add("hidden");
+    alert("An error occurred while placing your order. Please try again.");
     paymentStep.classList.remove("hidden");
+    thankStep.classList.add("hidden");
   }
   }
 })();
