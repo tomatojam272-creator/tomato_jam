@@ -1,364 +1,372 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Checkout - Tomato Jam</title>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; background:#fff7f7; margin:0; padding:0; }
-    .checkout-container { max-width:900px; margin:2rem auto; background:#fff; border-radius:16px;
-      box-shadow:0 6px 18px rgba(0,0,0,0.08); overflow:hidden; }
-    header { background:#d62828; padding:1.2rem; color:white; text-align:center; }
-    header h1 { margin:0; font-size:1.6rem; }
-    .content { display:grid; grid-template-columns:1fr 1fr; gap:2rem; padding:2rem; align-items:start; }
-    .order-summary { background:#fff0f0; border:1px solid #f5c2c2; border-radius:12px; padding:1.5rem; }
-    .order-summary h2 { margin:0 0 1rem; color:#d62828; font-size:1.3rem; }
-    .summary-row { display:flex; justify-content:space-between; margin:0.5rem 0; font-size:1rem; color:#333; }
-    .final-total { margin-top:1rem; padding-top:1rem; border-top:1px solid #e6bcbc; font-size:1.15rem; font-weight:700; color:#d62828; display:flex; justify-content:space-between; }
-    form label { font-weight:600; margin-bottom:0.25rem; display:block; color:#444; }
-    form input, form select { width:100%; border:1px solid #ccc; border-radius:8px; padding:0.75rem; margin-bottom:1rem; font-size:1rem; }
-    .btn { width:100%; padding:1rem; font-size:1.1rem; border-radius:10px; cursor:pointer; border:none; }
-    .btn-primary { background:#d62828; color:white; }
-    .btn-primary:hover { background:#a81f1f; }
-    .hidden { display:none; }
-    .payment-options { padding:2rem; text-align:center; }
-    .payment-method { border:1px solid #ddd; border-radius:10px; padding:1rem; margin:1rem 0; cursor:pointer; transition:.3s; }
-    .payment-method:hover { background:#fbeaea; }
-    .bank-list { display:grid; grid-template-columns:repeat(2,1fr); gap:1rem; margin-top:1rem; }
-    .bank-item { border:1px solid #ddd; border-radius:8px; padding:0.5rem; text-align:center; cursor:pointer; background:#fff; display:flex; align-items:center; justify-content:center; gap:0.5rem; }
-    .bank-item img { width:32px; height:32px; object-fit:contain; }
-    .bank-details { margin-top:1rem; padding:1rem; border:1px solid #ccc; border-radius:10px; background:#fff7f7; }
-    .thank-card { max-width:420px; margin:2rem auto; background:#fff5f5; border:1px solid #f5c2c2; border-radius:12px; padding:20px; text-align:left; }
-    .thank-card h2 { color:#d62828; }
+    :root{
+      --accent:#d62828;
+      --accent-dark:#a81f1f;
+      --bg:#fff7f7;
+      --card:#fff;
+      --muted:#666;
+      --radius:12px;
+      --gap:1rem;
+      --max-width:980px;
+      --container-padding:1.25rem;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial; background:var(--bg); color:#222}
+
+    .wrap{max-width:var(--max-width);margin:1.25rem auto;padding:var(--container-padding)}
+
+    header{background:var(--accent);color:#fff;padding:0.9rem 1rem;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+    header h1{font-size:1.1rem;margin:0;display:flex;align-items:center;gap:.5rem}
+    header .subtitle{font-size:.85rem;opacity:.95}
+
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:0 6px 18px rgba(0,0,0,.06);padding:1rem}
+
+    /* layout */
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:1rem}
+
+    /* mobile first adjustments */
+    @media (max-width:880px){
+      .grid{grid-template-columns:1fr;}
+      header{flex-direction:column;align-items:flex-start}
+      .order-summary h3{font-size:1rem}
+    }
+
+    .order-summary{background:#fff0f0;border:1px solid #f5c2c2;padding:1rem;border-radius:10px}
+    .order-summary h3{margin:0 0 .5rem;color:var(--accent)}
+    .order-row{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px dashed rgba(0,0,0,.03)}
+    .order-row:last-child{border-bottom:0}
+    .total-row{font-weight:700;color:var(--accent);padding-top:.6rem}
+
+    form{display:flex;flex-direction:column;gap:.5rem}
+    label{font-weight:600;font-size:.95rem;color:#333}
+    input[type="text"],input[type="email"],select,textarea{width:100%;padding:.7rem;border:1px solid #dcdcdc;border-radius:8px;font-size:1rem}
+    input::placeholder{color:#999}
+
+    .btn{display:inline-block;padding:.85rem 1rem;border-radius:10px;border:0;font-weight:700;cursor:pointer}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-primary:active{background:var(--accent-dark)}
+    .btn-ghost{background:transparent;border:1px solid #eee}
+
+    .payment-section{padding:1rem}
+    .methods{display:flex;gap:.6rem;flex-wrap:wrap}
+    .method{flex:1 1 140px;padding:.8rem;border-radius:10px;border:1px solid #eee;cursor:pointer;text-align:center;background:#fff}
+    .method.selected{outline:3px solid rgba(214,40,40,.12)}
+
+    .bank-list{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-top:.6rem}
+    .bank-item{display:flex;align-items:center;gap:.5rem;padding:.5rem;border-radius:8px;border:1px solid #eee;cursor:pointer}
+    .bank-item img{width:36px;height:24px;object-fit:contain}
+
+    .hidden{display:none}
+    .center{text-align:center}
+
+    /* thank you card */
+    .thank-card{max-width:520px;margin:1rem auto;padding:1rem;background:#fff5f5;border:1px solid #f5c2c2;border-radius:10px}
+
+    /* spinner */
+    .spinner{border:4px solid #f3f3f3;border-top:4px solid var(--accent);border-radius:50%;width:36px;height:36px;animation:spin 1s linear infinite;margin:0 auto}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* small text */
+    .note{font-size:.9rem;color:var(--muted)}
+
+    /* responsive tweaks for very small devices */
+    @media (max-width:420px){
+      header h1{font-size:1rem}
+      .order-summary{padding:.8rem}
+      .bank-list{grid-template-columns:repeat(1,1fr)}
+    }
+
   </style>
 </head>
 <body>
-  <div class="checkout-container">
-    <header><h1 id="checkout-header">🍅 Checkout - Tomato Jam</h1></header>
+  <div class="wrap">
+    <header>
+      <h1>🍅 Tomato Jam — Checkout</h1>
+      <div class="subtitle note">Please review & complete your details</div>
+    </header>
 
-    <!-- Step 1: Checkout -->
-    <div id="checkout-step" class="content">
-      <div class="order-summary">
-        <h2>🍅 Please Note:</h2>
-        <ul>
-          <li>Review your order and complete your details below.</li>
-          <li>You’ll receive confirmation after placing order.</li>
-          <li>Ensure someone is available to receive your order.</li>
-          <li>We only allow 2 re-delivery attempts. Unsucessful order will be cancelled with no refund.</li>
-        </ul>
-        <h2>Order Summary</h2>
-        <div class="summary-row"><span>Product:</span><span class="product-name">Tomato Jam (120ml)</span></div>
-        <div class="summary-row"><span>Price:</span><span class="product-price">₱90.00</span></div>
-        <div class="summary-row"><span>Quantity:</span><span class="quantity-display">1</span></div>
-        <div class="summary-row"><span>Shipping Fee:</span><span class="shipping-display">₱50.00</span></div>
-        <div class="final-total"><span>Total:</span><span class="total-display">₱140.00</span></div>
-      </div>
+    <main style="margin-top:1rem">
+      <div class="grid">
+        <!-- left: form -->
+        <div class="card">
+          <h3 style="margin-top:0">Customer Details</h3>
+          <form id="checkout-form" novalidate>
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" required placeholder="Juan Dela Cruz">
 
-      <form id="checkout-form">
-        <label>Name</label>
-        <input id="name" required>
-        <label>Contact Number</label>
-        <input id="contactNumber" required placeholder="+63 900 000 0000">
-        <label>Email</label>
-        <input id="email" type="email" required placeholder="tomatojam@example.com">
-        <label>City (Metro Manila only)</label>
-        <select id="city" required>
-          <option value="">-- Select City --</option>
-          <option>Caloocan</option><option>Las Piñas</option><option>Makati</option>
-          <option>Malabon</option><option>Mandaluyong</option><option>Manila</option>
-          <option>Marikina</option><option>Muntinlupa</option><option>Navotas</option>
-          <option>Parañaque</option><option>Pasay</option><option>Pasig</option>
-          <option>Pateros</option><option>Quezon City</option><option>San Juan</option>
-          <option>Taguig</option><option>Valenzuela</option>
-        </select>
-        <label>Full Address</label>
-        <input id="address" required>
-        <button type="submit" class="btn btn-primary">Confirm Order</button>
-      </form>
-    </div>
+            <label for="contactNumber">Contact Number</label>
+            <input id="contactNumber" name="contactNumber" type="text" required placeholder="+63 900 000 0000">
 
-    <!-- Step 2: Payment -->
-    <div id="payment-step" class="payment-options hidden">
-      <h2>Select Payment Method</h2>
-      <div class="payment-method" id="gcash-option">💳 Pay with GCash</div>
-      <div class="payment-method" id="bank-option">🏦 Bank Transfer</div>
-      <div class="payment-method" id="cod-option">📦 Cash on Delivery</div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required placeholder="you@example.com">
 
-      <!-- GCash -->
-      <div id="gcash-box" class="hidden">
-        <h3>Scan QR with GCash</h3>
-        <img src="src/assets/QR-code.jpeg" alt="GCash QR" width="200">
-        <p>Upload payment receipt:   <input type="file" id="gcash-file-upload" accept="image/*"></p>
-        <button class="btn btn-primary" id="gcash-done">Done</button>
-      </div>
+            <label for="city">City (Metro Manila only)</label>
+            <select id="city" name="city" required>
+              <option value="">-- Select City --</option>
+              <option>Caloocan</option><option>Las Piñas</option><option>Makati</option>
+              <option>Malabon</option><option>Mandaluyong</option><option>Manila</option>
+              <option>Marikina</option><option>Muntinlupa</option><option>Navotas</option>
+              <option>Parañaque</option><option>Pasay</option><option>Pasig</option>
+              <option>Pateros</option><option>Quezon City</option><option>San Juan</option>
+              <option>Taguig</option><option>Valenzuela</option>
+            </select>
 
-      <!-- Banks -->
-      <div id="bank-box" class="hidden">
-        <h3>Select Your Bank</h3>
-        <div class="bank-list">
-          <div class="bank-item" data-bank="BDO"><img src="src/assets/bdo.jpg" alt="BDO"> BDO</div>
-          <div class="bank-item" data-bank="BPI"><img src="src/assets/bpi.jpg" alt="BPI"> BPI</div>
-          <div class="bank-item" data-bank="Metrobank"><img src="src/assets/metrobank.png" alt="Metrobank"> Metrobank</div>
-          <div class="bank-item" data-bank="LandBank"><img src="src/assets/landbank.png" alt="LandBank"> LandBank</div>
-          <div class="bank-item" data-bank="UnionBank"><img src="src/assets/unionbank.jpg" alt="UnionBank"> UnionBank</div>
-          <div class="bank-item" data-bank="Security Bank"><img src="src/assets/Security-Bank.jpg" alt="Security Bank"> Security Bank</div>
-          <div class="bank-item" data-bank="China Bank"><img src="src/assets/chinabank.png" alt="China Bank"> China Bank</div>
-          <div class="bank-item" data-bank="RCBC"><img src="src/assets/rcbc.png" alt="RCBC"> RCBC</div>
+            <label for="address">Full Address</label>
+            <input id="address" name="address" type="text" required placeholder="House no., Street, Barangay">
+
+            <div style="display:flex;gap:.5rem;margin-top:.5rem">
+              <button class="btn btn-primary" type="submit">Confirm Order</button>
+              <button type="button" class="btn btn-ghost" id="reset-btn">Reset</button>
+            </div>
+
+            <p class="note" style="margin-top:.6rem">By placing an order you accept our delivery policies. We allow up to 2 re-delivery attempts — unsuccessful orders may be cancelled without refund.</p>
+          </form>
         </div>
-        <div id="bank-details" class="bank-details hidden"></div>
-        <p style="margin-top:1rem;">Upload payment proof: 
-          <input type="file" id="bank-file-upload" accept="image/*">
-        </p>
-        <button class="btn btn-primary" id="bank-done">Done</button>
+
+        <!-- right: order summary & payment -->
+        <aside>
+          <div class="card order-summary">
+            <h3>Order Summary</h3>
+            <div class="order-row"><div>Product</div><div class="product-name">Tomato Jam (120ml)</div></div>
+            <div class="order-row"><div>Price</div><div class="product-price">₱90.00</div></div>
+            <div class="order-row"><div>Quantity</div><div class="quantity-display">1</div></div>
+            <div class="order-row"><div>Shipping Fee</div><div class="shipping-display">₱50.00</div></div>
+            <div class="order-row total-row"><div>Total</div><div class="total-display">₱140.00</div></div>
+          </div>
+
+          <div class="card payment-section" style="margin-top:1rem">
+            <h3 style="margin-top:0">Payment</h3>
+            <div class="methods" role="tablist">
+              <div class="method" id="gcash-option" role="button" tabindex="0">💳 GCash</div>
+              <div class="method" id="bank-option" role="button" tabindex="0">🏦 Bank Transfer</div>
+              <div class="method" id="cod-option" role="button" tabindex="0">📦 Cash on Delivery</div>
+            </div>
+
+            <div id="gcash-box" class="hidden" style="margin-top:.75rem">
+              <div class="note">Scan QR with GCash and upload receipt</div>
+              <div style="text-align:center;margin:.6rem 0"><img src="src/assets/QR-code.jpeg" alt="GCash QR" style="max-width:75%;height:auto;border-radius:8px;border:1px solid #eee"></div>
+              <input type="file" id="gcash-file-upload" accept="image/*" aria-label="Upload GCash receipt">
+              <div style="margin-top:.6rem;text-align:right"><button class="btn btn-primary" id="gcash-done">Done</button></div>
+            </div>
+
+            <div id="bank-box" class="hidden" style="margin-top:.75rem">
+              <div class="note">Choose bank account then upload proof</div>
+              <div class="bank-list" id="bank-list">
+                <div class="bank-item" data-bank="BDO"><img src="src/assets/bdo.jpg" alt="BDO"> <div>BDO</div></div>
+                <div class="bank-item" data-bank="BPI"><img src="src/assets/bpi.jpg" alt="BPI"> <div>BPI</div></div>
+                <div class="bank-item" data-bank="Metrobank"><img src="src/assets/metrobank.png" alt="Metrobank"> <div>Metrobank</div></div>
+                <div class="bank-item" data-bank="LandBank"><img src="src/assets/landbank.png" alt="LandBank"> <div>LandBank</div></div>
+                <div class="bank-item" data-bank="UnionBank"><img src="src/assets/unionbank.jpg" alt="UnionBank"> <div>UnionBank</div></div>
+                <div class="bank-item" data-bank="Security Bank"><img src="src/assets/Security-Bank.jpg" alt="Security Bank"> <div>Security Bank</div></div>
+                <div class="bank-item" data-bank="China Bank"><img src="src/assets/chinabank.png" alt="China Bank"> <div>China Bank</div></div>
+                <div class="bank-item" data-bank="RCBC"><img src="src/assets/rcbc.png" alt="RCBC"> <div>RCBC</div></div>
+              </div>
+
+              <div id="bank-details" class="hidden card" style="margin-top:.6rem;padding:.6rem;border-radius:8px"></div>
+              <div style="margin-top:.6rem"><input type="file" id="bank-file-upload" accept="image/*"></div>
+              <div style="margin-top:.6rem;text-align:right"><button class="btn btn-primary" id="bank-done">Done</button></div>
+            </div>
+
+          </div>
+
+          <div id="thank-step" class="hidden thank-card">
+            <h3 style="margin:0;color:var(--accent)">Thank you for purchasing! 🍅</h3>
+            <div id="order-details" style="margin-top:.6rem"></div>
+            <div style="margin-top:.6rem;text-align:right"><button class="btn btn-primary" id="home-btn">Go Home</button></div>
+          </div>
+
+          <div id="loading-step" class="hidden card center" style="margin-top:1rem">
+            <div class="spinner"></div>
+            <p class="note">Processing your order...</p>
+          </div>
+
+        </aside>
       </div>
-    </div>
-
-    <div id="loading-step" class="hidden loading-box">
-  <div class="spinner"></div>
-  <p>Processing your order, please wait...</p>
-</div>
-
-
-   <div id="thank-step" class="thank-card hidden">
-  <h2>Thank you for purchasing! 🍅</h2>
-  <p>We’ll reach out soon using your details.</p>
-  <div id="order-details"></div>
-  <button class="btn btn-primary" id="home-btn">Navigate to Home</button>
-</div>
-
+    </main>
   </div>
 
-    <style>
-  /* --- Spinner --- */
-  .spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #e63946;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    animation: spin 1s linear infinite;
-    margin: 1rem auto;
-  }
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  .loading-box {
-    text-align: center;
-    padding: 2rem;
-  }
-</style>
+  <script>
+    // keep values from original file
+    let selectedBank = "";
+    let orderInfo = {};
+    const basePrice = 90;
+    let qty = 1;
 
-<script>
-  let selectedBank = "";
-  let orderInfo = {};
-  let basePrice = 90;
-  let qty = 1;
-
-  const form = document.getElementById("checkout-form");
-  const checkoutStep = document.getElementById("checkout-step");
-  const paymentStep = document.getElementById("payment-step");
-  const thankStep = document.getElementById("thank-step");
-  const orderDetails = document.getElementById("order-details");
-
-  const gcashOption = document.getElementById("gcash-option");
-  const bankOption = document.getElementById("bank-option");
-  const codOption = document.getElementById("cod-option");
-
-  const gcashBox = document.getElementById("gcash-box");
-  const bankBox = document.getElementById("bank-box");
-  const bankDetails = document.getElementById("bank-details");
-
-  const shippingDisplay = document.querySelector(".shipping-display");
-  const totalDisplay = document.querySelector(".total-display");
-
-  const citySelect = document.getElementById("city");
-  let shippingFee = 50; // default
-
-  // --- Shipping Fee per City ---
-  const shippingRates = {
-    "Caloocan": 120, "Las Piñas": 170, "Makati": 120, "Malabon": 120,
-    "Mandaluyong": 150, "Manila": 150, "Marikina": 150, "Muntinlupa": 180,
-    "Navotas": 120, "Parañaque": 170, "Pasay": 160, "Pasig": 150,
-    "Pateros": 110, "Quezon City": 120, "San Juan": 150,
-    "Taguig": 160, "Valenzuela": 80
-  };
-
-  citySelect.addEventListener("change", () => {
-    const city = citySelect.value;
-    shippingFee = shippingRates[city] || 50;
-    shippingDisplay.textContent = `₱${shippingFee.toFixed(2)}`;
-    const total = basePrice * qty + shippingFee;
-    totalDisplay.textContent = `₱${total.toFixed(2)}`;
-  });
-
-  // --- Bank Accounts ---
-  const bankAccounts = {
-    "BDO": { name: "Tomato Jam PH", number: "1234-5678-90" },
-    "BPI": { name: "Tomato Jam PH", number: "9876-5432-10" },
-    "Metrobank": { name: "Tomato Jam PH", number: "1122-3344-55" },
-    "LandBank": { name: "Tomato Jam PH", number: "6677-8899-00" },
-    "UnionBank": { name: "Tomato Jam PH", number: "4455-6677-88" },
-    "Security Bank": { name: "Tomato Jam PH", number: "9988-7766-55" },
-    "China Bank": { name: "Tomato Jam PH", number: "2233-4455-66" },
-    "RCBC": { name: "Tomato Jam PH", number: "7788-9900-11" }
-  };
-
-  // --- Form Submit ---
-  form.addEventListener("submit", e => {
-  e.preventDefault();
-
-  const total = basePrice * qty + shippingFee;
-  orderInfo = {
-    name: document.getElementById("name").value,
-    contact: document.getElementById("contactNumber").value,
-    email: document.getElementById("email").value,
-    city: citySelect.value,
-    address: document.getElementById("address").value,
-    product: "Tomato Jam (120ml)",
-    price: basePrice,
-    qty: qty,
-    shipping: shippingFee,
-    total: total
-  };
-
-  // Show loading first
-  checkoutStep.classList.add("hidden");
-  document.getElementById("loading-step").classList.remove("hidden");
-
-  // Simulate small delay before showing payment
-  setTimeout(() => {
-    document.getElementById("loading-step").classList.add("hidden");
-    paymentStep.classList.remove("hidden");
-  }, 1500); // 1.5s delay for user feedback
-});
-
-  // --- File Helpers ---
-  function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      if (!file) return resolve(null);
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
-    });
-  }
-
-  async function getProofFile(inputId, missingMsg) {
-    const input = document.getElementById(inputId);
-    if (!input) {
-      alert(`System error: Input #${inputId} not found.`);
-      return null;
-    }
-    const file = input.files[0];
-    if (!file) {
-      alert(missingMsg);
-      return null;
-    }
-    return await fileToBase64(file);
-  }
-
-  // --- Payment Method Toggles ---
-  function hideAllPaymentBoxes() {
-    gcashBox.classList.add("hidden");
-    bankBox.classList.add("hidden");
-    bankDetails.classList.add("hidden");
-  }
-
-  gcashOption.onclick = () => {
-    hideAllPaymentBoxes();
-    gcashBox.classList.remove("hidden");
-  };
-
-  bankOption.onclick = () => {
-    hideAllPaymentBoxes();
-    bankBox.classList.remove("hidden");
-  };
-
-  codOption.onclick = () => {
-    alert("Cash on Delivery is not available at the moment.");
-  };
-
-  // --- Bank Selection ---
-  document.querySelectorAll(".bank-item").forEach(bank => {
-    bank.addEventListener("click", () => {
-      selectedBank = bank.dataset.bank;
-      const account = bankAccounts[selectedBank];
-      bankDetails.classList.remove("hidden");
-      bankDetails.innerHTML = `
-        <h4>${selectedBank} Account</h4>
-        <p><strong>Account Name:</strong> ${account.name}</p>
-        <p><strong>Account Number:</strong> ${account.number}</p>
-      `;
-    });
-  });
-
-  // --- GCash Done ---
-  document.getElementById("gcash-done").onclick = async () => {
-    const proof = await getProofFile("gcash-file-upload", "Please upload your GCash payment receipt.");
-    if (!proof) return;
-    showThankYou("GCash", proof);
-  };
-
-  // --- Bank Done ---
-  document.getElementById("bank-done").onclick = async () => {
-    if (!selectedBank) {
-      alert("Please select a bank first.");
-      return;
-    }
-    const proof = await getProofFile("bank-file-upload", "Please upload your bank payment proof.");
-    if (!proof) return;
-    showThankYou(`Bank Transfer (${selectedBank})`, proof);
-  };
-
-  // --- Show Thank You & Send to Google Sheets ---
-  async function showThankYou(method, paymentProof = null) {
-  orderInfo.paymentMethod = method;
-  orderInfo.paymentProof = paymentProof; // base64 string
-
-  try {
-    const url = "https://script.google.com/macros/s/AKfycbzTVISaP3c7lPHq_SkznZFQ4sWXYzN2y4iDmJaXor0UYA0hbqQlS5G4EHoH_fvbqGlu/exec";
-
-    // ✅ Use application/json for proper parsing
-    const response = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify(orderInfo),
-      headers: { "Content-Type": "application/json" }
-    });
-
-    const resData = await response.json(); // parse JSON from server
-    console.log("Sheet response:", resData);
-
-    if(resData.status !== "success"){
-      throw new Error(resData.message || "Failed to place order");
-    }
-
-    // Success UI
-    paymentStep.classList.add("hidden");
-    thankStep.classList.remove("hidden");
-    document.getElementById("checkout-header").textContent = "✅ Checkout Successfully";
-
-    orderDetails.innerHTML = `
-      <h3>Order Summary</h3>
-      <p><strong>Product:</strong> ${orderInfo.product}</p>
-      <p><strong>Total:</strong> ₱${orderInfo.total.toFixed(2)}</p>
-      <h3>Customer</h3>
-      <p>${orderInfo.name} - ${orderInfo.contact}</p>
-      <p><strong>Payment Method:</strong> ${method}</p>
-      ${resData.fileUrl ? `<p><strong>Receipt:</strong> <a href="${resData.fileUrl}" target="_blank">View</a></p>` : ""}
-    `;
-
-    document.getElementById("home-btn").onclick = () => {
-      window.location.href = "index.html";
+    const shippingRates = {
+      "Caloocan": 120, "Las Piñas": 170, "Makati": 120, "Malabon": 120,
+      "Mandaluyong": 150, "Manila": 150, "Marikina": 150, "Muntinlupa": 180,
+      "Navotas": 120, "Parañaque": 170, "Pasay": 160, "Pasig": 150,
+      "Pateros": 110, "Quezon City": 120, "San Juan": 150,
+      "Taguig": 160, "Valenzuela": 80
     };
-  } catch (err) {
-    console.error("Error sending order:", err);
-    alert("An error occurred while placing your order. Please try again.");
-    paymentStep.classList.remove("hidden");
-    thankStep.classList.add("hidden");
-  }
 
-  }
-</script>
+    const bankAccounts = {
+      "BDO": { name: "Tomato Jam PH", number: "1234-5678-90" },
+      "BPI": { name: "Tomato Jam PH", number: "9876-5432-10" },
+      "Metrobank": { name: "Tomato Jam PH", number: "1122-3344-55" },
+      "LandBank": { name: "Tomato Jam PH", number: "6677-8899-00" },
+      "UnionBank": { name: "Tomato Jam PH", number: "4455-6677-88" },
+      "Security Bank": { name: "Tomato Jam PH", number: "9988-7766-55" },
+      "China Bank": { name: "Tomato Jam PH", number: "2233-4455-66" },
+      "RCBC": { name: "Tomato Jam PH", number: "7788-9900-11" }
+    };
+
+    // element refs
+    const citySelect = document.getElementById('city');
+    const shippingDisplay = document.querySelector('.shipping-display');
+    const totalDisplay = document.querySelector('.total-display');
+    const productPriceEl = document.querySelector('.product-price');
+
+    function updateTotals(){
+      const city = citySelect.value;
+      const shipping = shippingRates[city] || 50;
+      shippingDisplay.textContent = `₱${shipping.toFixed(2)}`;
+      const total = basePrice * qty + shipping;
+      totalDisplay.textContent = `₱${total.toFixed(2)}`;
+    }
+
+    citySelect.addEventListener('change', updateTotals);
+    updateTotals();
+
+    // payment toggles
+    const gcashOption = document.getElementById('gcash-option');
+    const bankOption = document.getElementById('bank-option');
+    const codOption = document.getElementById('cod-option');
+    const gcashBox = document.getElementById('gcash-box');
+    const bankBox = document.getElementById('bank-box');
+    const bankDetails = document.getElementById('bank-details');
+    const bankList = document.getElementById('bank-list');
+
+    function deselectMethods(){
+      document.querySelectorAll('.method').forEach(m=>m.classList.remove('selected'));
+      gcashBox.classList.add('hidden'); bankBox.classList.add('hidden');
+    }
+
+    gcashOption.addEventListener('click', ()=>{deselectMethods();gcashOption.classList.add('selected');gcashBox.classList.remove('hidden');});
+    bankOption.addEventListener('click', ()=>{deselectMethods();bankOption.classList.add('selected');bankBox.classList.remove('hidden');});
+    codOption.addEventListener('click', ()=>{alert('Cash on Delivery is not available at the moment.');});
+
+    // bank selection
+    bankList.querySelectorAll('.bank-item').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        selectedBank = el.dataset.bank;
+        bankDetails.classList.remove('hidden');
+        const acc = bankAccounts[selectedBank];
+        bankDetails.innerHTML = `<strong>${selectedBank} Account</strong><div style="margin-top:.4rem"><div><strong>Account Name:</strong> ${acc.name}</div><div><strong>Account Number:</strong> ${acc.number}</div></div>`;
+        // highlight selection
+        bankList.querySelectorAll('.bank-item').forEach(x=>x.style.boxShadow='none');
+        el.style.boxShadow = '0 4px 12px rgba(0,0,0,.06)';
+      })
+    });
+
+    // file helpers
+    function fileToBase64(file){
+      return new Promise((resolve,reject)=>{
+        if(!file) return resolve(null);
+        const reader = new FileReader();
+        reader.onload = ()=>resolve(reader.result);
+        reader.onerror = (e)=>reject(e);
+        reader.readAsDataURL(file);
+      })
+    }
+
+    async function getProofFile(inputId, missingMsg){
+      const input = document.getElementById(inputId);
+      if(!input) {alert('System error: missing input'); return null}
+      const file = input.files[0];
+      if(!file){ alert(missingMsg); return null }
+      return await fileToBase64(file);
+    }
+
+    // actions
+    const form = document.getElementById('checkout-form');
+    const loadingStep = document.getElementById('loading-step');
+    const paymentSection = document.querySelector('.payment-section');
+    const thankStep = document.getElementById('thank-step');
+    const orderDetails = document.getElementById('order-details');
+
+    form.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      if(!form.reportValidity()) return;
+      const total = (()=>{ const city = citySelect.value; const shipping = shippingRates[city]||50; return basePrice*qty + shipping })();
+
+      orderInfo = {
+        name: document.getElementById('name').value,
+        contact: document.getElementById('contactNumber').value,
+        email: document.getElementById('email').value,
+        city: citySelect.value,
+        address: document.getElementById('address').value,
+        product: 'Tomato Jam (120ml)',
+        price: basePrice,
+        qty: qty,
+        shipping: (shippingRates[citySelect.value]||50),
+        total: total
+      };
+
+      // show loading then payment
+      form.closest('.card').classList.add('hidden');
+      loadingStep.classList.remove('hidden');
+      setTimeout(()=>{ loadingStep.classList.add('hidden'); paymentSection.parentElement.classList.remove('hidden'); }, 600);
+    });
+
+    // payment done handlers
+    document.getElementById('gcash-done').addEventListener('click', async ()=>{
+      const proof = await getProofFile('gcash-file-upload','Please upload your GCash payment receipt.');
+      if(!proof) return;
+      await submitOrder('GCash', proof);
+    });
+
+    document.getElementById('bank-done').addEventListener('click', async ()=>{
+      if(!selectedBank){ alert('Please select a bank first.'); return }
+      const proof = await getProofFile('bank-file-upload','Please upload your bank payment proof.');
+      if(!proof) return;
+      await submitOrder(`Bank Transfer (${selectedBank})`, proof);
+    });
+
+    // submit to Google Sheets (keeps original behavior)
+    async function submitOrder(method, paymentProof=null){
+      orderInfo.paymentMethod = method;
+      orderInfo.paymentProof = paymentProof;
+
+      // show processing
+      document.querySelector('.payment-section').closest('.card').classList.add('hidden');
+      thankStep.classList.remove('hidden');
+      document.querySelector('header h1').textContent = '⏳ Processing Order...';
+      orderDetails.innerHTML = `<div class="spinner" style="margin-bottom:.6rem"></div><div class="note">Please wait while we process your order...</div>`;
+
+      try{
+        const url = 'https://script.google.com/macros/s/AKfycbzTVISaP3c7lPHq_SkznZFQ4sWXYzN2y4iDmJaXor0UYA0hbqQlS5G4EHoH_fvbqGlu/exec';
+        const res = await fetch(url,{method:'POST',body:JSON.stringify(orderInfo),headers:{'Content-Type':'text/plain'}});
+        const txt = await res.text(); console.log('Sheet response',txt);
+
+        document.querySelector('header h1').textContent = '✅ Checkout Successfully';
+        orderDetails.innerHTML = `
+          <div><strong>Product:</strong> ${orderInfo.product}</div>
+          <div><strong>Total:</strong> ₱${orderInfo.total.toFixed(2)}</div>
+          <div style="margin-top:.5rem"><strong>Customer:</strong> ${orderInfo.name} — ${orderInfo.contact}</div>
+          <div><strong>Payment:</strong> ${method}</div>
+        `;
+
+        document.getElementById('home-btn').addEventListener('click', ()=>{ window.location.href = 'index.html'; });
+      }catch(err){
+        console.error('Error sending order',err);
+        alert('An error occurred while placing your order. Please try again later.');
+        // revert to showing payment section for retry
+        document.querySelector('.payment-section').closest('.card').classList.remove('hidden');
+        thankStep.classList.add('hidden');
+      }
+    }
+
+    // preserve reset
+    document.getElementById('reset-btn').addEventListener('click', ()=>{ form.reset(); updateTotals(); document.querySelector('.card').classList.remove('hidden'); document.querySelector('.payment-section').closest('.card').classList.remove('hidden'); thankStep.classList.add('hidden'); loadingStep.classList.add('hidden'); });
+
+  </script>
 </body>
 </html>
