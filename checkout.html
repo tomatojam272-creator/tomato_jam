@@ -343,7 +343,12 @@
 
       try{
         const url = 'https://script.google.com/macros/s/AKfycbzTVISaP3c7lPHq_SkznZFQ4sWXYzN2y4iDmJaXor0UYA0hbqQlS5G4EHoH_fvbqGlu/exec';
-        const res = await fetch(url,{method:'POST',body:JSON.stringify(orderInfo),headers:{'Content-Type':'text/plain'}});
+        const res = await fetch(url, {
+          method: 'POST',
+          mode: 'no-cors',   // or handle proper CORS in GAS
+          body: JSON.stringify(orderInfo),
+          headers: { 'Content-Type': 'application/json' }
+        });
         const txt = await res.text(); console.log('Sheet response',txt);
 
         document.querySelector('header h1').textContent = '✅ Checkout Successfully';
