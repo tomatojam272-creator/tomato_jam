@@ -113,12 +113,19 @@
       </div>
     </div>
 
+    <div id="loading-step" class="hidden loading-box">
+  <div class="spinner"></div>
+  <p>Processing your order, please wait...</p>
+</div>
+
+
    <div id="thank-step" class="thank-card hidden">
   <h2>Thank you for purchasing! 🍅</h2>
   <p>We’ll reach out soon using your details.</p>
   <div id="order-details"></div>
   <button class="btn btn-primary" id="home-btn">Navigate to Home</button>
 </div>
+
   </div>
 
     <style>
@@ -199,23 +206,32 @@
 
   // --- Form Submit ---
   form.addEventListener("submit", e => {
-    e.preventDefault();
-    const total = basePrice * qty + shippingFee;
-    orderInfo = {
-      name: document.getElementById("name").value,
-      contact: document.getElementById("contactNumber").value,
-      email: document.getElementById("email").value,
-      city: citySelect.value,
-      address: document.getElementById("address").value,
-      product: "Tomato Jam (120ml)",
-      price: basePrice,
-      qty: qty,
-      shipping: shippingFee,
-      total: total
-    };
-    checkoutStep.classList.add("hidden");
+  e.preventDefault();
+
+  const total = basePrice * qty + shippingFee;
+  orderInfo = {
+    name: document.getElementById("name").value,
+    contact: document.getElementById("contactNumber").value,
+    email: document.getElementById("email").value,
+    city: citySelect.value,
+    address: document.getElementById("address").value,
+    product: "Tomato Jam (120ml)",
+    price: basePrice,
+    qty: qty,
+    shipping: shippingFee,
+    total: total
+  };
+
+  // Show loading first
+  checkoutStep.classList.add("hidden");
+  document.getElementById("loading-step").classList.remove("hidden");
+
+  // Simulate small delay before showing payment
+  setTimeout(() => {
+    document.getElementById("loading-step").classList.add("hidden");
     paymentStep.classList.remove("hidden");
-  });
+  }, 1500); // 1.5s delay for user feedback
+});
 
   // --- File Helpers ---
   function fileToBase64(file) {
