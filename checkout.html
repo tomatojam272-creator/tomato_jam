@@ -252,13 +252,13 @@
     orderDetails.innerHTML=`<div class="loading-box"><div class="spinner"></div><p>Please wait...</p></div>`;
 
     try {
-    const url = "https://script.google.com/macros/s/AKfycbzTVISaP3c7lPHq_SkznZFQ4sWXYzN2y4iDmJaXor0UYA0hbqQlS5G4EHoH_fvbqGlu/exec";
+    const url = "https://script.google.com/macros/s/AKfycbz3IYmlRc4BhugOhkLCXaVCOYwpf_udcdlPMY-_vJyAlj_wLCYanc4ze_atkK5lEGMG/exec";
 
     const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain" }, // 👈 no preflight
-      body: JSON.stringify(orderInfo)
-    });
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(orderInfo)
+  });
 
     await res.text(); // still consume response
 
