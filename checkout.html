@@ -121,7 +121,28 @@
 </div>
   </div>
 
-    <script>
+    <style>
+  /* --- Spinner --- */
+  .spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #e63946;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    animation: spin 1s linear infinite;
+    margin: 1rem auto;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .loading-box {
+    text-align: center;
+    padding: 2rem;
+  }
+</style>
+
+<script>
   let selectedBank = "";
   let orderInfo = {};
   let basePrice = 90;
@@ -144,6 +165,9 @@
   const shippingDisplay = document.querySelector(".shipping-display");
   const totalDisplay = document.querySelector(".total-display");
 
+  const citySelect = document.getElementById("city");
+  let shippingFee = 50; // default
+
   // --- Shipping Fee per City ---
   const shippingRates = {
     "Caloocan": 120, "Las Piñas": 170, "Makati": 120, "Malabon": 120,
@@ -152,9 +176,6 @@
     "Pateros": 110, "Quezon City": 120, "San Juan": 150,
     "Taguig": 160, "Valenzuela": 80
   };
-
-  const citySelect = document.getElementById("city");
-  let shippingFee = 50; // default
 
   citySelect.addEventListener("change", () => {
     const city = citySelect.value;
@@ -196,7 +217,7 @@
     paymentStep.classList.remove("hidden");
   });
 
-  // --- Convert file to base64 ---
+  // --- File Helpers ---
   function fileToBase64(file) {
     return new Promise((resolve, reject) => {
       if (!file) return resolve(null);
@@ -207,7 +228,6 @@
     });
   }
 
-  // --- Helper: Validate & return proof ---
   async function getProofFile(inputId, missingMsg) {
     const input = document.getElementById(inputId);
     if (!input) {
@@ -260,7 +280,7 @@
   // --- GCash Done ---
   document.getElementById("gcash-done").onclick = async () => {
     const proof = await getProofFile("gcash-file-upload", "Please upload your GCash payment receipt.");
-    if (!proof) return; // stop if invalid
+    if (!proof) return;
     showThankYou("GCash", proof);
   };
 
@@ -280,21 +300,30 @@
     orderInfo.paymentMethod = method;
     orderInfo.paymentProof = paymentProof;
 
+    // Show loading
+    paymentStep.classList.add("hidden");
+    thankStep.classList.remove("hidden");
+    document.getElementById("checkout-header").textContent = "⏳ Processing Order...";
+    orderDetails.innerHTML = `
+      <div class="loading-box">
+        <div class="spinner"></div>
+        <p>Please wait while we process your order...</p>
+      </div>
+    `;
+
     try {
       const url = "https://script.google.com/macros/s/AKfycbzTVISaP3c7lPHq_SkznZFQ4sWXYzN2y4iDmJaXor0UYA0hbqQlS5G4EHoH_fvbqGlu/exec";
       const response = await fetch(url, {
         method: "POST",
         body: JSON.stringify(orderInfo),
-        headers: { "Content-Type": "text/plain" } // bypass preflight
+        headers: { "Content-Type": "text/plain" }
       });
 
       const resText = await response.text();
       console.log("Sheet response:", resText);
 
-      paymentStep.classList.add("hidden");
-      thankStep.classList.remove("hidden");
+      // Replace loading with final Thank You
       document.getElementById("checkout-header").textContent = "✅ Checkout Successfully";
-
       orderDetails.innerHTML = `
         <h3>Order Summary</h3>
         <p><strong>Product:</strong> ${orderInfo.product}</p>
