@@ -144,7 +144,7 @@
   const shippingDisplay = document.querySelector(".shipping-display");
   const totalDisplay = document.querySelector(".total-display");
 
-  // shipping fee per city
+  // --- Shipping Fee per City ---
   const shippingRates = {
     "Caloocan": 120, "Las Piñas": 170, "Makati": 120, "Malabon": 120,
     "Mandaluyong": 150, "Manila": 150, "Marikina": 150, "Muntinlupa": 180,
@@ -164,6 +164,7 @@
     totalDisplay.textContent = `₱${total.toFixed(2)}`;
   });
 
+  // --- Bank Accounts ---
   const bankAccounts = {
     "BDO": { name: "Tomato Jam PH", number: "1234-5678-90" },
     "BPI": { name: "Tomato Jam PH", number: "9876-5432-10" },
@@ -175,6 +176,7 @@
     "RCBC": { name: "Tomato Jam PH", number: "7788-9900-11" }
   };
 
+  // --- Form Submit ---
   form.addEventListener("submit", e => {
     e.preventDefault();
     const total = basePrice * qty + shippingFee;
@@ -194,6 +196,7 @@
     paymentStep.classList.remove("hidden");
   });
 
+  // --- Convert file to base64 ---
   function fileToBase64(file) {
     return new Promise((resolve, reject) => {
       if (!file) return resolve(null);
@@ -204,16 +207,36 @@
     });
   }
 
+  // --- Helper: Validate & return proof ---
+  async function getProofFile(inputId, missingMsg) {
+    const input = document.getElementById(inputId);
+    if (!input) {
+      alert(`System error: Input #${inputId} not found.`);
+      return null;
+    }
+    const file = input.files[0];
+    if (!file) {
+      alert(missingMsg);
+      return null;
+    }
+    return await fileToBase64(file);
+  }
+
   // --- Payment Method Toggles ---
-  gcashOption.onclick = () => {
-    gcashBox.classList.toggle("hidden");
+  function hideAllPaymentBoxes() {
+    gcashBox.classList.add("hidden");
     bankBox.classList.add("hidden");
     bankDetails.classList.add("hidden");
+  }
+
+  gcashOption.onclick = () => {
+    hideAllPaymentBoxes();
+    gcashBox.classList.remove("hidden");
   };
 
   bankOption.onclick = () => {
-    bankBox.classList.toggle("hidden");
-    gcashBox.classList.add("hidden");
+    hideAllPaymentBoxes();
+    bankBox.classList.remove("hidden");
   };
 
   codOption.onclick = () => {
@@ -234,39 +257,21 @@
     });
   });
 
-  // --- Refactored GCash Done ---
+  // --- GCash Done ---
   document.getElementById("gcash-done").onclick = async () => {
-    const gcashFileUpload = document.getElementById("gcash-file-upload");
-    if (!gcashFileUpload) {
-      alert("System error: GCash file input not found.");
-      return;
-    }
-    const file = gcashFileUpload.files[0];
-    if (!file) {
-      alert("Please upload your GCash payment receipt.");
-      return;
-    }
-    const proof = await fileToBase64(file);
+    const proof = await getProofFile("gcash-file-upload", "Please upload your GCash payment receipt.");
+    if (!proof) return; // stop if invalid
     showThankYou("GCash", proof);
   };
 
-  // --- Refactored Bank Done ---
+  // --- Bank Done ---
   document.getElementById("bank-done").onclick = async () => {
     if (!selectedBank) {
       alert("Please select a bank first.");
       return;
     }
-    const bankFileUpload = document.getElementById("bank-file-upload");
-    if (!bankFileUpload) {
-      alert("System error: Bank file input not found.");
-      return;
-    }
-    const file = bankFileUpload.files[0];
-    if (!file) {
-      alert("Please upload your bank payment proof.");
-      return;
-    }
-    const proof = await fileToBase64(file);
+    const proof = await getProofFile("bank-file-upload", "Please upload your bank payment proof.");
+    if (!proof) return;
     showThankYou(`Bank Transfer (${selectedBank})`, proof);
   };
 
@@ -283,7 +288,8 @@
         headers: { "Content-Type": "text/plain" } // bypass preflight
       });
 
-      console.log("Sheet response:", await response.text());
+      const resText = await response.text();
+      console.log("Sheet response:", resText);
 
       paymentStep.classList.add("hidden");
       thankStep.classList.remove("hidden");
