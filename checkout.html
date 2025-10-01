@@ -313,51 +313,51 @@
 
   // --- Show Thank You & Send to Google Sheets ---
   async function showThankYou(method, paymentProof = null) {
-    orderInfo.paymentMethod = method;
-    orderInfo.paymentProof = paymentProof;
+  orderInfo.paymentMethod = method;
+  orderInfo.paymentProof = paymentProof; // base64 string
 
-    // Show loading
+  try {
+    const url = "https://script.google.com/macros/s/AKfycbzTVISaP3c7lPHq_SkznZFQ4sWXYzN2y4iDmJaXor0UYA0hbqQlS5G4EHoH_fvbqGlu/exec";
+
+    // ✅ Use application/json for proper parsing
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify(orderInfo),
+      headers: { "Content-Type": "application/json" }
+    });
+
+    const resData = await response.json(); // parse JSON from server
+    console.log("Sheet response:", resData);
+
+    if(resData.status !== "success"){
+      throw new Error(resData.message || "Failed to place order");
+    }
+
+    // Success UI
     paymentStep.classList.add("hidden");
     thankStep.classList.remove("hidden");
-    document.getElementById("checkout-header").textContent = "⏳ Processing Order...";
+    document.getElementById("checkout-header").textContent = "✅ Checkout Successfully";
+
     orderDetails.innerHTML = `
-      <div class="loading-box">
-        <div class="spinner"></div>
-        <p>Please wait while we process your order...</p>
-      </div>
+      <h3>Order Summary</h3>
+      <p><strong>Product:</strong> ${orderInfo.product}</p>
+      <p><strong>Total:</strong> ₱${orderInfo.total.toFixed(2)}</p>
+      <h3>Customer</h3>
+      <p>${orderInfo.name} - ${orderInfo.contact}</p>
+      <p><strong>Payment Method:</strong> ${method}</p>
+      ${resData.fileUrl ? `<p><strong>Receipt:</strong> <a href="${resData.fileUrl}" target="_blank">View</a></p>` : ""}
     `;
 
-    try {
-      const url = "https://script.google.com/macros/s/AKfycbzTVISaP3c7lPHq_SkznZFQ4sWXYzN2y4iDmJaXor0UYA0hbqQlS5G4EHoH_fvbqGlu/exec";
-      const response = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify(orderInfo),
-        headers: { "Content-Type": "text/plain" }
-      });
+    document.getElementById("home-btn").onclick = () => {
+      window.location.href = "index.html";
+    };
+  } catch (err) {
+    console.error("Error sending order:", err);
+    alert("An error occurred while placing your order. Please try again.");
+    paymentStep.classList.remove("hidden");
+    thankStep.classList.add("hidden");
+  }
 
-      const resText = await response.text();
-      console.log("Sheet response:", resText);
-
-      // Replace loading with final Thank You
-      document.getElementById("checkout-header").textContent = "✅ Checkout Successfully";
-      orderDetails.innerHTML = `
-        <h3>Order Summary</h3>
-        <p><strong>Product:</strong> ${orderInfo.product}</p>
-        <p><strong>Total:</strong> ₱${orderInfo.total.toFixed(2)}</p>
-        <h3>Customer</h3>
-        <p>${orderInfo.name} - ${orderInfo.contact}</p>
-        <p><strong>Payment Method:</strong> ${method}</p>
-      `;
-
-      document.getElementById("home-btn").onclick = () => {
-        window.location.href = "index.html";
-      };
-    } catch (err) {
-      console.error("Error sending order:", err);
-      alert("An error occurred while placing your order. Please try again.");
-      paymentStep.classList.remove("hidden");
-      thankStep.classList.add("hidden");
-    }
   }
 </script>
 </body>
