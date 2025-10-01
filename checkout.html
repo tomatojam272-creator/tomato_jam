@@ -244,12 +244,12 @@
     finalizeOrder(`Bank (${selectedBank})`,proof);
   });
 
-  async function showThankYou(method, paymentProof = null) {
-  orderInfo.paymentMethod = method;
-  orderInfo.paymentProof = paymentProof; // base64 string
+  async function finalizeOrder(method,proof){
+    orderInfo.paymentMethod = method;
+    orderInfo.paymentProof = proof; // base64 string
 
   try {
-    const url = "https://script.google.com/macros/s/AKfycbw3CurIeuf0cGzRaC9dBNYEJH-vhEEM04xz1uSUTPPS7oRIWScUK9WjE_0KDbBc53OD/exec";
+    const url = "https://script.google.com/macros/s/AKfycbzTVISaP3c7lPHq_SkznZFQ4sWXYzN2y4iDmJaXor0UYA0hbqQlS5G4EHoH_fvbqGlu/exec";
 
     const response = await fetch(url, {
       method: "POST",
