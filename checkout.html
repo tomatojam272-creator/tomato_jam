@@ -88,7 +88,7 @@
       <div id="gcash-box" class="hidden">
         <h3>Scan QR with GCash</h3>
         <img src="src/assets/QR-code.jpeg" alt="GCash QR" width="200">
-        <p>Upload payment receipt: <input type="file"></p>
+        <p>Upload payment receipt: <input type="file" **id="gcash-file-upload"** accept="image/*"></p>
         <button class="btn btn-primary" id="gcash-done">Done</button>
       </div>
 
@@ -106,7 +106,7 @@
           <div class="bank-item" data-bank="RCBC"><img src="src/assets/rcbc.png" alt="RCBC"> RCBC</div>
         </div>
         <div id="bank-details" class="bank-details hidden"></div>
-        <p style="margin-top:1rem;">Upload payment proof: <input type="file"></p>
+        <p style="margin-top:1rem;">Upload payment proof: <input type="file" **id="bank-file-upload"** accept="image/*"></p>
         <button class="btn btn-primary" id="bank-done">Done</button>
       </div>
     </div>
@@ -151,6 +151,9 @@
   const gcashDone = document.getElementById("gcash-done");
   const bankDone = document.getElementById("bank-done");
   const bankDetails = document.getElementById("bank-details");
+
+  const gcashFileUpload = document.getElementById("gcash-file-upload");
+  const bankFileUpload = document.getElementById("bank-file-upload");
 
   const shippingDisplay = document.querySelector(".shipping-display");
   const totalDisplay = document.querySelector(".total-display");
@@ -211,23 +214,40 @@
     e.preventDefault();
     const total = basePrice * qty + shippingFee;
     orderInfo = {
-  name: document.getElementById("name").value,
-  contact: document.getElementById("contactNumber").value,
-  email: document.getElementById("email").value,
-  city: citySelect.value,
-  address: document.getElementById("address").value,
-  product: "Tomato Jam (120ml)",
-  price: basePrice,
-  qty: qty,
-  shippingFee: shippingFee, // 🔥 match backend
-  total: total
-};
+      name: document.getElementById("name").value,
+      contact: document.getElementById("contactNumber").value,
+      email: document.getElementById("email").value,
+      city: citySelect.value,
+      address: document.getElementById("address").value,
+      product: "Tomato Jam (120ml)",
+      price: basePrice,
+      qty: qty,
+      shipping: shippingFee,
+      total: total
+    };
     checkoutStep.classList.add("hidden");
     paymentStep.classList.remove("hidden");
   });
 
-  gcashOption.onclick = () => { gcashBox.classList.toggle("hidden"); bankBox.classList.add("hidden"); };
-  bankOption.onclick = () => { bankBox.classList.toggle("hidden"); gcashBox.classList.add("hidden"); };
+    function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      if (!file) return resolve(null);
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+  gcashOption.onclick = () => {
+  gcashBox.classList.toggle("hidden");
+  bankBox.classList.add("hidden");
+  bankDetails.classList.add("hidden"); // Added to hide bank details when switching
+  };
+  bankOption.onclick = () => {
+    bankBox.classList.toggle("hidden");
+    gcashBox.classList.add("hidden");
+  };
   codOption.onclick = () => { alert("Cash on Delivery is not available at the moment."); };
 
   document.querySelectorAll(".bank-item").forEach(bank => {
@@ -243,53 +263,56 @@
     });
   });
 
-  gcashDone.onclick = () => {
-  const fileInput = document.querySelector("#gcash-box input[type=file]");
-  if(fileInput.files.length > 0){
-    const reader = new FileReader();
-    reader.onload = function(e){
-      orderInfo.paymentProof = e.target.result; // base64 string
-      showThankYou("GCash");
+  gcashDone.onclick = async () => {
+    const file = gcashFileUpload.files[0];
+    const proof = await fileToBase64(file);
+    // Optional: Add basic validation
+    if (!proof) {
+      alert("Please upload your GCash payment receipt.");
+      return;
     }
-    reader.readAsDataURL(fileInput.files[0]); // convert to base64
-  } else {
-    alert("Please upload your GCash payment proof first.");
-  }
-};
+    showThankYou("GCash", proof);
+  };
 
-bankDone.onclick = () => {
-  const fileInput = document.querySelector("#bank-box input[type=file]");
-  if(fileInput.files.length > 0){
-    const reader = new FileReader();
-    reader.onload = function(e){
-      orderInfo.paymentProof = e.target.result; // base64 string
-      if (selectedBank) {
-        showThankYou(`Bank Transfer (${selectedBank})`);
-      } else {
-        alert("Please select a bank first.");
-      }
+  bankDone.onclick = async () => {
+    if (!selectedBank) {
+      alert("Please select a bank first.");
+      return;
     }
-    reader.readAsDataURL(fileInput.files[0]); // convert to base64
-  } else {
-    alert("Please upload your bank payment proof first.");
-  }
-};
+    const file = bankFileUpload.files[0];
+    const proof = await fileToBase64(file);
+    // Optional: Add basic validation
+    if (!proof) {
+      alert("Please upload your bank payment proof.");
+      return;
+    }
+    showThankYou(`Bank Transfer (${selectedBank})`, proof);
+  };
 
-function showThankYou(method){ 
+  async function showThankYou(method, paymentProof) { 
+  // Save payment method and proof into orderInfo
   orderInfo.paymentMethod = method;
+  orderInfo.paymentProof = paymentProof; // <-- New field for Base64 proof
 
-  fetch("https://script.google.com/macros/s/AKfycbx5V8fYOy7BKxnDjeWgJEBwsFRW5VnFH2KCM6uTt0zaqYNDh4ypyDV8a9iHi6E1ZeGv/exec", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(orderInfo)
-})
-  .then(res => res.text())
-  .then(txt => console.log("Sheet response:", txt))
-  .catch(err => console.error("Error sending order:", err));
+  // --- send to Google Sheets Web App ---
+  try {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbxwZykANaHPWNFJTwwJQemKJSQCL6FdIHB0N9oSjCRR2auimd0QHihdIOmKx83qeeJC/exec", {
+      method: "POST",
+      body: JSON.stringify(orderInfo),
+      headers: {
+        'Content-Type': 'text/plain' // Use text/plain for raw JSON to avoid preflight issues, as Apps Script parses the raw body.
+      }
+    });
+    const text = await response.text();
+    console.log("Sheet response:", text);
+  } catch(err) {
+    console.error("Error sending order:", err);
+  }
 
-  // show thank you screen
+  // --- show thank you page ---
   paymentStep.classList.add("hidden");
   thankStep.classList.remove("hidden");
+
   document.getElementById("checkout-header").textContent = "✅ Checkout Successfully";
 
   orderDetails.innerHTML = `
@@ -297,7 +320,7 @@ function showThankYou(method){
     <p><strong>Product:</strong> ${orderInfo.product}</p>
     <p><strong>Price:</strong> ₱${orderInfo.price}</p>
     <p><strong>Quantity:</strong> ${orderInfo.qty}</p>
-    <p><strong>Shipping Fee:</strong> ₱${orderInfo.shippingFee}</p>
+    <p><strong>Shipping Fee:</strong> ₱${orderInfo.shipping}</p>
     <p><strong>Total:</strong> ₱${orderInfo.total}</p>
     <h3>Customer</h3>
     <p>${orderInfo.name} - ${orderInfo.contact}</p>
@@ -306,7 +329,9 @@ function showThankYou(method){
     <p><strong>Payment Method:</strong> ${method}</p>
   `;
 
-  document.getElementById("home-btn").onclick = () => window.location.href = "index.html";
+  document.getElementById("home-btn").onclick = () => {
+    window.location.href = "index.html";
+  };
 }
   </script>
 </body>
