@@ -264,30 +264,47 @@
   });
 
   gcashDone.onclick = async () => {
-    const file = gcashFileUpload.files[0];
-    const proof = await fileToBase64(file);
-    // Optional: Add basic validation
-    if (!proof) {
-      alert("Please upload your GCash payment receipt.");
-      return;
-    }
-    showThankYou("GCash", proof);
-  };
+  // Add a check to confirm the element was found before proceeding
+  if (!gcashFileUpload) {
+    console.error("Error: The 'gcash-file-upload' element was not found.");
+    alert("System error: File upload element is missing. Please contact support.");
+    return;
+  }
+  
+  // ERROR IS HERE: If gcashFileUpload is null, attempting to read .files throws the error.
+  const file = gcashFileUpload.files[0];
+  const proof = await fileToBase64(file);
+  
+  if (!proof) {
+    alert("Please upload your GCash payment receipt.");
+    return;
+  }
+  showThankYou("GCash", proof);
+};
 
-  bankDone.onclick = async () => {
-    if (!selectedBank) {
-      alert("Please select a bank first.");
-      return;
-    }
-    const file = bankFileUpload.files[0];
-    const proof = await fileToBase64(file);
-    // Optional: Add basic validation
-    if (!proof) {
-      alert("Please upload your bank payment proof.");
-      return;
-    }
-    showThankYou(`Bank Transfer (${selectedBank})`, proof);
-  };
+// **REFACTORED Bank Done Handler**
+bankDone.onclick = async () => {
+  if (!selectedBank) {
+    alert("Please select a bank first.");
+    return;
+  }
+  
+  // Add a check to confirm the element was found before proceeding
+  if (!bankFileUpload) {
+    console.error("Error: The 'bank-file-upload' element was not found.");
+    alert("System error: File upload element is missing. Please contact support.");
+    return;
+  }
+  
+  const file = bankFileUpload.files[0];
+  const proof = await fileToBase64(file);
+  
+  if (!proof) {
+    alert("Please upload your bank payment proof.");
+    return;
+  }
+  showThankYou(`Bank Transfer (${selectedBank})`, proof);
+};
 
   async function showThankYou(method, paymentProof = null){ // Add paymentProof parameter
   // 1. Save payment method and proof into orderInfo
