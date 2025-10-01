@@ -88,7 +88,7 @@
       <div id="gcash-box" class="hidden">
         <h3>Scan QR with GCash</h3>
         <img src="src/assets/QR-code.jpeg" alt="GCash QR" width="200">
-        <p>Upload payment receipt: <input type="file" **id="gcash-file-upload"** accept="image/*"></p>
+        <p>Upload payment receipt:   <input type="file" id="gcash-file-upload" accept="image/*"></p>
         <button class="btn btn-primary" id="gcash-done">Done</button>
       </div>
 
@@ -106,7 +106,9 @@
           <div class="bank-item" data-bank="RCBC"><img src="src/assets/rcbc.png" alt="RCBC"> RCBC</div>
         </div>
         <div id="bank-details" class="bank-details hidden"></div>
-        <p style="margin-top:1rem;">Upload payment proof: <input type="file" **id="bank-file-upload"** accept="image/*"></p>
+        <p style="margin-top:1rem;">Upload payment proof: 
+          <input type="file" id="bank-file-upload" accept="image/*">
+        </p>
         <button class="btn btn-primary" id="bank-done">Done</button>
       </div>
     </div>
