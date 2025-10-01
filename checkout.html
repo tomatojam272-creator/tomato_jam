@@ -243,36 +243,52 @@
     });
   });
 
-  gcashDone.onclick = () => showThankYou("GCash");
-  bankDone.onclick = () => {
-  if (selectedBank) {
-    showThankYou(`Bank Transfer (${selectedBank})`);
+  gcashDone.onclick = () => {
+  const fileInput = document.querySelector("#gcash-box input[type=file]");
+  if(fileInput.files.length > 0){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      orderInfo.paymentProof = e.target.result; // base64 string
+      showThankYou("GCash");
+    }
+    reader.readAsDataURL(fileInput.files[0]); // convert to base64
   } else {
-    alert("Please select a bank first.");
+    alert("Please upload your GCash payment proof first.");
   }
 };
 
-  function showThankYou(method){ 
-  // Save payment method into orderInfo
+bankDone.onclick = () => {
+  const fileInput = document.querySelector("#bank-box input[type=file]");
+  if(fileInput.files.length > 0){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      orderInfo.paymentProof = e.target.result; // base64 string
+      if (selectedBank) {
+        showThankYou(`Bank Transfer (${selectedBank})`);
+      } else {
+        alert("Please select a bank first.");
+      }
+    }
+    reader.readAsDataURL(fileInput.files[0]); // convert to base64
+  } else {
+    alert("Please upload your bank payment proof first.");
+  }
+};
+
+function showThankYou(method){ 
   orderInfo.paymentMethod = method;
 
-  // --- send to Google Sheets Web App ---
-  fetch("https://script.google.com/macros/s/AKfycbzedXZ9tuTm8UhDtoq1o2AvZuGLxaPiomOW4XT-ljAx1XUSQ6GljgRnrL1NGUo65RzL/exec", {   // <-- replace with deployed script URL
+  fetch("https://script.google.com/macros/s/AKfycbzedXZ9tuTm8UhDtoq1o2AvZuGLxaPiomOW4XT-ljAx1XUSQ6GljgRnrL1NGUo65RzL/exec", {
     method: "POST",
     body: JSON.stringify(orderInfo)
   })
   .then(res => res.text())
-  .then(txt => {
-    console.log("Sheet response:", txt);
-  })
-  .catch(err => {
-    console.error("Error sending order:", err);
-  });
+  .then(txt => console.log("Sheet response:", txt))
+  .catch(err => console.error("Error sending order:", err));
 
-  // --- show thank you page ---
+  // show thank you screen
   paymentStep.classList.add("hidden");
   thankStep.classList.remove("hidden");
-
   document.getElementById("checkout-header").textContent = "✅ Checkout Successfully";
 
   orderDetails.innerHTML = `
@@ -289,9 +305,7 @@
     <p><strong>Payment Method:</strong> ${method}</p>
   `;
 
-  document.getElementById("home-btn").onclick = () => {
-    window.location.href = "index.html";
-  };
+  document.getElementById("home-btn").onclick = () => window.location.href = "index.html";
 }
   </script>
 </body>
