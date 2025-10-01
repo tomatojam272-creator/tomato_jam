@@ -169,7 +169,7 @@
 
   // Populate banks dynamically
   bankList.innerHTML = Object.keys(bankAccounts)
-    .map(b => `<div class="bank-item" data-bank="${b}"><img src="src/assets/${b.toLowerCase().replace(' ','')}.jpg" alt="${b}"> ${b}</div>`).join("");
+    .map(b => `<div class="bank-item" data-bank="${b}"><img src="src/assets/${b.toLowerCase().replace(' ','')}.png" alt="${b}"> ${b}</div>`).join("");
 
   // Calculate total
   const updateTotal = () => {
