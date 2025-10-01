@@ -289,49 +289,54 @@
     showThankYou(`Bank Transfer (${selectedBank})`, proof);
   };
 
-  async function showThankYou(method, paymentProof) { 
-  // Save payment method and proof into orderInfo
+  async function showThankYou(method, paymentProof = null){ // Add paymentProof parameter
+  // 1. Save payment method and proof into orderInfo
   orderInfo.paymentMethod = method;
-  orderInfo.paymentProof = paymentProof; // <-- New field for Base64 proof
+  orderInfo.paymentProof = paymentProof; // <-- Pass Base64 string to orderInfo
 
-  // --- send to Google Sheets Web App ---
+  // 2. --- send to Google Sheets Web App ---
   try {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbxwZykANaHPWNFJTwwJQemKJSQCL6FdIHB0N9oSjCRR2auimd0QHihdIOmKx83qeeJC/exec", {
+    const url = "https://script.google.com/macros/s/AKfycbyZ0aBJUu1c3foFz4eS99AvMkph8_UegZ3s7viQ49itRutvLLPYYgHuXYfctLZMSVYB/exec"; // Use your new URL
+    
+    const response = await fetch(url, { 
       method: "POST",
-      body: JSON.stringify(orderInfo),
+      // IMPORTANT: Stringify the entire object including the Base64 data
+      body: JSON.stringify(orderInfo), 
       headers: {
-        'Content-Type': 'text/plain' // Use text/plain for raw JSON to avoid preflight issues, as Apps Script parses the raw body.
+        // 💡 CRITICAL CORS FIX: Send as text/plain to bypass the preflight check
+        'Content-Type': 'text/plain' 
       }
     });
+
     const text = await response.text();
     console.log("Sheet response:", text);
+
+    // 3. --- show thank you page ---
+    paymentStep.classList.add("hidden");
+    thankStep.classList.remove("hidden");
+    document.getElementById("checkout-header").textContent = "✅ Checkout Successfully";
+
+    orderDetails.innerHTML = `
+      <h3>Order Summary</h3>
+      <p><strong>Product:</strong> ${orderInfo.product}</p>
+      <p><strong>Total:</strong> ₱${orderInfo.total.toFixed(2)}</p>
+      <h3>Customer</h3>
+      <p>${orderInfo.name} - ${orderInfo.contact}</p>
+      <p><strong>Payment Method:</strong> ${method}</p>
+    `;
+
+    document.getElementById("home-btn").onclick = () => {
+      window.location.href = "index.html";
+    };
+
   } catch(err) {
+    // 4. Handle fetch error and show a user-friendly message
     console.error("Error sending order:", err);
+    alert("An error occurred while placing your order. Please check your connection and try again.");
+    // Optional: Hide thank you and show payment step again
+    paymentStep.classList.remove("hidden");
+    thankStep.classList.add("hidden"); 
   }
-
-  // --- show thank you page ---
-  paymentStep.classList.add("hidden");
-  thankStep.classList.remove("hidden");
-
-  document.getElementById("checkout-header").textContent = "✅ Checkout Successfully";
-
-  orderDetails.innerHTML = `
-    <h3>Order Summary</h3>
-    <p><strong>Product:</strong> ${orderInfo.product}</p>
-    <p><strong>Price:</strong> ₱${orderInfo.price}</p>
-    <p><strong>Quantity:</strong> ${orderInfo.qty}</p>
-    <p><strong>Shipping Fee:</strong> ₱${orderInfo.shipping}</p>
-    <p><strong>Total:</strong> ₱${orderInfo.total}</p>
-    <h3>Customer</h3>
-    <p>${orderInfo.name} - ${orderInfo.contact}</p>
-    <p>${orderInfo.email}</p>
-    <p>${orderInfo.address}, ${orderInfo.city}</p>
-    <p><strong>Payment Method:</strong> ${method}</p>
-  `;
-
-  document.getElementById("home-btn").onclick = () => {
-    window.location.href = "index.html";
-  };
 }
   </script>
 </body>
