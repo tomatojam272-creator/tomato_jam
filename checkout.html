@@ -211,17 +211,17 @@
     e.preventDefault();
     const total = basePrice * qty + shippingFee;
     orderInfo = {
-      name: document.getElementById("name").value,
-      contact: document.getElementById("contactNumber").value,
-      email: document.getElementById("email").value,
-      city: citySelect.value,
-      address: document.getElementById("address").value,
-      product: "Tomato Jam (120ml)",
-      price: basePrice,
-      qty: qty,
-      shipping: shippingFee,
-      total: total
-    };
+  name: document.getElementById("name").value,
+  contact: document.getElementById("contactNumber").value,
+  email: document.getElementById("email").value,
+  city: citySelect.value,
+  address: document.getElementById("address").value,
+  product: "Tomato Jam (120ml)",
+  price: basePrice,
+  qty: qty,
+  shippingFee: shippingFee, // 🔥 match backend
+  total: total
+};
     checkoutStep.classList.add("hidden");
     paymentStep.classList.remove("hidden");
   });
@@ -279,9 +279,10 @@ function showThankYou(method){
   orderInfo.paymentMethod = method;
 
   fetch("https://script.google.com/macros/s/AKfycbzedXZ9tuTm8UhDtoq1o2AvZuGLxaPiomOW4XT-ljAx1XUSQ6GljgRnrL1NGUo65RzL/exec", {
-    method: "POST",
-    body: JSON.stringify(orderInfo)
-  })
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(orderInfo)
+})
   .then(res => res.text())
   .then(txt => console.log("Sheet response:", txt))
   .catch(err => console.error("Error sending order:", err));
