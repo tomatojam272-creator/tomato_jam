@@ -252,27 +252,34 @@
     orderDetails.innerHTML=`<div class="loading-box"><div class="spinner"></div><p>Please wait...</p></div>`;
 
     try {
-      const res=await fetch("https://script.google.com/macros/s/AKfycbzTVISaP3c7lPHq_SkznZFQ4sWXYzN2y4iDmJaXor0UYA0hbqQlS5G4EHoH_fvbqGlu/exec",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(orderInfo)
-      });
-      await res.text();
-      document.getElementById("checkout-header").textContent="✅ Checkout Success";
-      orderDetails.innerHTML=`
-        <h3>Order Summary</h3>
-        <p><strong>Product:</strong> ${orderInfo.product}</p>
-        <p><strong>Total:</strong> ₱${orderInfo.total.toFixed(2)}</p>
-        <h3>Customer</h3>
-        <p>${orderInfo.name} - ${orderInfo.contact}</p>
-        <p><strong>Payment:</strong> ${method}</p>`;
-      document.getElementById("home-btn").onclick=()=>location.href="index.html";
-    } catch(err){
-      console.error(err);
-      alert("Error placing order. Try again.");
-      thankStep.classList.add("hidden");
-      paymentStep.classList.remove("hidden");
-    }
+    const url = "https://script.google.com/macros/s/AKfycbzTVISaP3c7lPHq_SkznZFQ4sWXYzN2y4iDmJaXor0UYA0hbqQlS5G4EHoH_fvbqGlu/exec";
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" }, // 👈 no preflight
+      body: JSON.stringify(orderInfo)
+    });
+
+    await res.text(); // still consume response
+
+    document.getElementById("checkout-header").textContent = "✅ Checkout Success";
+    orderDetails.innerHTML = `
+      <h3>Order Summary</h3>
+      <p><strong>Product:</strong> ${orderInfo.product}</p>
+      <p><strong>Total:</strong> ₱${orderInfo.total.toFixed(2)}</p>
+      <h3>Customer</h3>
+      <p>${orderInfo.name} - ${orderInfo.contact}</p>
+      <p><strong>Payment:</strong> ${method}</p>
+    `;
+
+    document.getElementById("home-btn").onclick = () => location.href = "index.html";
+
+  } catch (err) {
+    console.error("Error sending order:", err);
+    alert("Error placing order. Try again.");
+    thankStep.classList.add("hidden");
+    paymentStep.classList.remove("hidden");
+  }
   }
 })();
 </script>
