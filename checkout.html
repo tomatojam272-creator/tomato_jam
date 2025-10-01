@@ -278,7 +278,7 @@ bankDone.onclick = () => {
 function showThankYou(method){ 
   orderInfo.paymentMethod = method;
 
-  fetch("https://script.google.com/macros/s/AKfycbzedXZ9tuTm8UhDtoq1o2AvZuGLxaPiomOW4XT-ljAx1XUSQ6GljgRnrL1NGUo65RzL/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbwxT5rZBh9QShftm62Em5kmF4rHiKJ7o8fFqHUhtkP6sU_9t3Tue6gYPBgWh-NZnXw/exec", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify(orderInfo)
